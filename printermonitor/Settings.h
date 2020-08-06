@@ -76,6 +76,14 @@ boolean IS_METRIC = false; // false = Imperial and true = Metric
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
 String WeatherLanguage = "en";  //Default (en) English
 
+// Temperature Configuration
+boolean DISPLAYTEMPERATURE = false; // true = show temperature when not printing / false = no weather
+boolean IS_METRIC_TEMPERATURE = false; // false = Imperial and true = Metric
+const char DHT_TYPE = DHT11; // define DHTTYPE USE DHT11, DHT22 or DHT21
+const int DHT_PIN = D4; //define data pin for dht
+// Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
+String TemperatureLanguage = "en";  //Default (en) English
+
 // Webserver
 const int WEBSERVER_PORT = 80; // The port you can access this device on over HTTP
 const boolean WEBSERVER_ENABLED = true;  // Device will provide a web interface via http://[ip]:[port]/
