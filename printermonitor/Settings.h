@@ -79,7 +79,7 @@ String WeatherLanguage = "en";  //Default (en) English
 // Temperature Configuration
 boolean DISPLAYTEMPERATURE = false; // true = show temperature when not printing / false = no weather
 boolean IS_METRIC_TEMPERATURE = false; // false = Imperial and true = Metric
-const char DHT_TYPE = DHT11; // define DHTTYPE USE DHT11, DHT22 or DHT21
+//const char DHT_TYPE = DHT11; // define DHTTYPE USE DHT11, DHT22 or DHT21
 const int DHT_PIN = D4; //define data pin for dht
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
 String TemperatureLanguage = "en";  //Default (en) English
@@ -102,7 +102,7 @@ const int I2C_DISPLAY_ADDRESS = 0x3c; // I2C Address of your Display (usually 0x
 const int SDA_PIN = D2;
 const int SCL_PIN = D5; // original code D5 -- Monitor Easy Board use D1
 boolean INVERT_DISPLAY = false; // true = pins at top | false = pins at the bottom
-//#define DISPLAY_SH1106       // Uncomment this line to use the SH1106 display -- SSD1306 is used by default and is most common
+#define DISPLAY_SH1106       // Uncomment this line to use the SH1106 display -- SSD1306 is used by default and is most common
 
 // LED Settings
 const int externalLight = LED_BUILTIN; // LED will always flash on bootup or Wifi Errors
