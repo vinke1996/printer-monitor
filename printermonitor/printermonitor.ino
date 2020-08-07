@@ -62,6 +62,7 @@ void drawScreen3(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int
 void drawHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
 void drawClock(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
+//void drawTemperature(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y);
 void drawClockHeaderOverlay(OLEDDisplay *display, OLEDDisplayUiState* state);
 
 // Set the number of Frames supported
@@ -95,6 +96,9 @@ int printerCount = 0;
 // Weather Client
 OpenWeatherMapClient weatherClient(WeatherApiKey, CityIDs, 1, IS_METRIC, WeatherLanguage);
 
+// Temperature Client
+//OpenWeatherMapClient temperatureClient(WeatherApiKey, CityIDs, 1, IS_METRIC_TEMPERATURE, TemperatureLanguage);
+
 //declairing prototypes
 void configModeCallback (WiFiManager *myWiFiManager);
 int8_t getWifiQuality();
@@ -105,6 +109,7 @@ ESP8266HTTPUpdateServer serverUpdater;
 static const char WEB_ACTIONS[] PROGMEM =  "<a class='w3-bar-item w3-button' href='/'><i class='fa fa-home'></i> Home</a>"
                       "<a class='w3-bar-item w3-button' href='/configure'><i class='fa fa-cog'></i> Configure</a>"
                       "<a class='w3-bar-item w3-button' href='/configureweather'><i class='fa fa-cloud'></i> Weather</a>"
+                      //"<a class='w3-bar-item w3-button' href='/configuretemperature'><i class='fa fa-cloud'></i> Temperature</a>"
                       "<a class='w3-bar-item w3-button' href='/systemreset' onclick='return confirm(\"Do you want to reset to default settings?\")'><i class='fa fa-undo'></i> Reset Settings</a>"
                       "<a class='w3-bar-item w3-button' href='/forgetwifi' onclick='return confirm(\"Do you want to forget to WiFi connection?\")'><i class='fa fa-wifi'></i> Forget WiFi</a>"
                       "<a class='w3-bar-item w3-button' href='/update'><i class='fa fa-wrench'></i> Firmware Update</a>"
@@ -136,6 +141,18 @@ static const char WEATHER_FORM[] PROGMEM = "<form class='w3-container' action='/
                       "<p>Weather Language <select class='w3-option w3-padding' name='language'>%LANGUAGEOPTIONS%</select></p>"
                       "<button class='w3-button w3-block w3-grey w3-section w3-padding' type='submit'>Save</button></form>"
                       "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
+
+//static const char TEMPERATURE_FORM[] PROGMEM = "<form class='w3-container' action='/updatetemperatureconfig' method='get'><h2>Temperature Config:</h2>"
+//                      "<p><input name='isTemperatureEnabled' class='w3-check w3-margin-top' type='checkbox' %IS_TEMPERATURE_CHECKED%> Display Temperature when printer is off</p>"
+//                      "<p>Choose DHT type <select class='w3-option w3-padding' name='dhttype'>%DHTTYPEOPTIONS%</select></p>"
+//                      "<p><input name='metric' class='w3-check w3-margin-top' type='checkbox' %METRIC_TEMPERATURE%> Use Metric (Celsius)</p>"
+//                      "<p>Temperature Language <select class='w3-option w3-padding' name='language'>%LANGUAGEOPTIONS%</select></p>"
+//                      "<button class='w3-button w3-block w3-grey w3-section w3-padding' type='submit'>Save</button></form>"
+//                      "<script>function isNumberKey(e){var h=e.which?e.which:event.keyCode;return!(h>31&&(h<48||h>57))}</script>";
+//
+//static const char DHTTYPE_OPTIONS[] PROGMEM = "<option>DHT11</option>"
+//                      "<option>DHT22</option>"
+//                      "<option>DHT21</option>";
 
 static const char LANG_OPTIONS[] PROGMEM = "<option>ar</option>"
                       "<option>bg</option>"
@@ -261,6 +278,7 @@ void setup() {
   frames[2] = drawScreen3;
   clockFrame[0] = drawClock;
   clockFrame[1] = drawWeather;
+  //clockFrame[2] = drawTemperature;
   ui.setOverlays(overlays, numberOfOverlays);
   
   // Inital UI takes care of initalising the display too.
@@ -307,6 +325,7 @@ void setup() {
     server.on("/updateweatherconfig", handleUpdateWeather);
     server.on("/configure", handleConfigure);
     server.on("/configureweather", handleWeatherConfigure);
+    //server.on("/configuretemperature", handleTemperatureConfigure);
     server.onNotFound(redirectHome);
     serverUpdater.setup(&server, "/update", www_username, www_password);
     // Start the server
@@ -551,6 +570,48 @@ void handleWeatherConfigure() {
   server.client().stop();
   ledOnOff(false);
 }
+
+//void handleTemperatureConfigure() {
+//  if (!authentication()) {
+//    return server.requestAuthentication();
+//  }
+//  ledOnOff(true);
+//  String html = "";
+//
+//  server.sendHeader("Cache-Control", "no-cache, no-store");
+//  server.sendHeader("Pragma", "no-cache");
+//  server.sendHeader("Expires", "-1");
+//  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+//  server.send(200, "text/html", "");
+//
+//  html = getHeader();
+//  server.sendContent(html);
+//  
+//  String form = FPSTR(TEMPERATURE_FORM);
+//  String isTemperatureChecked = "";
+//  if (DISPLAYTEMPERATURE) {
+//    isTemperatureChecked = "checked='checked'";
+//  }
+//  form.replace("%IS_TEMPERATURE_CHECKED%", isTemperatureChecked);
+//  form.replace("%WEATHERKEY%", WeatherApiKey);
+//  form.replace("%CITYNAME1%", weatherClient.getCity(0));
+//  form.replace("%CITY1%", String(CityIDs[0]));
+//  String checked = "";
+//  if (IS_METRIC_TEMPERATURE) {
+//    checked = "checked='checked'";
+//  }
+//  form.replace("%METRIC_TEMPERATURE%", checked);
+//  String options = FPSTR(LANG_OPTIONS);
+//  options.replace(">"+String(TemperatureLanguage)+"<", " selected>"+String(TemperatureLanguage)+"<");
+//  form.replace("%LANGUAGEOPTIONS%", options);
+//  server.sendContent(form);
+//  
+//  html = getFooter();
+//  server.sendContent(html);
+//  server.sendContent("");
+//  server.client().stop();
+//  ledOnOff(false);
+//}
 
 void handleConfigure() {
   if (!authentication()) {
@@ -992,6 +1053,19 @@ void drawWeather(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int
   display->setFont((const uint8_t*)Meteocons_Plain_42);
   display->drawString(86 + x, 0 + y, weatherClient.getWeatherIcon(0));
 }
+
+//void drawTemperature(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+//  display->setTextAlignment(TEXT_ALIGN_LEFT);
+//  display->setFont(ArialMT_Plain_24);
+//  display->drawString(0 + x, 0 + y, temperatureClient.getTempRounded(0) + getTempSymbol());
+//  display->setTextAlignment(TEXT_ALIGN_LEFT);
+//  display->setFont(ArialMT_Plain_24);
+//
+//  display->setFont(ArialMT_Plain_16);
+//  display->drawString(0 + x, 24 + y, temperatureClient.getCondition(0));
+//  display->setFont((const uint8_t*)Meteocons_Plain_42);
+//  display->drawString(86 + x, 0 + y, temperatureClient.getWeatherIcon(0));
+//}
 
 String getTempSymbol() {
   return getTempSymbol(false);
